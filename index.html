@@ -326,7 +326,9 @@ $("saveform").addEventListener("submit",async e=>{
     const vault=await sealVault({gate,door},pw);
     const back=await openVault(pw,vault);
     if(back.gate!==gate||back.door!==door)throw new Error("check");
-    const artifact=window.claude&&window.claude.use?await window.claude.use("artifact"):null;
+    const onClaude=!!(window.claude&&window.claude.use);
+    const artifact=onClaude?await window.claude.use("artifact"):null;
+    if(onClaude&&!artifact){say("saveerr","Only the card owner can change the password. Open the card from Ram's claude.ai account.");return;}
     if(!artifact){
       // Static hosting (Vercel): hand the admin the updated page to upload to GitHub; Vercel redeploys it.
       const a=document.createElement("a");
