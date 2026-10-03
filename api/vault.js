@@ -62,7 +62,8 @@ export function OPTIONS() {
 
 export async function GET() {
   const vault = (await readJSON(VAULT_PATH)) || SEED;
-  return json({ vault, canSave: hasStore() && !!process.env.ADMIN_PIN });
+  // setup tells the admin which Vercel settings are missing (booleans only, no values).
+  return json({ vault, canSave: hasStore() && !!process.env.ADMIN_PIN, setup: { storage: hasStore(), adminPin: !!process.env.ADMIN_PIN } });
 }
 
 // Body: { pin }                                   -> checks the PIN
