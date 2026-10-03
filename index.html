@@ -220,19 +220,33 @@ button:focus-visible{outline:2px solid var(--ivory);outline-offset:2px}
 <script id="app">
 // Codes are AES-GCM encrypted with a key derived from the password (PBKDF2-SHA256, 250k rounds).
 // Neither the codes nor the password appear in this page's source.
-// Changing the password re-encrypts the codes and republishes this page with the new vault.
+// The latest vault lives on the Vercel server (/api/vault); the copy embedded below is the fallback.
 const $=id=>document.getElementById(id);
-// Source pieces, captured before anything renders, so a republish rebuilds the page from its source, not the live screen.
-const SRC={css:$("css").textContent,ui:$("ui").innerHTML,app:document.currentScript.textContent};
 document.body.appendChild($("ui").content.cloneNode(true));
 
 let VAULT=JSON.parse($("vault").textContent);
 let CURRENT=null,CURPW=null; // decrypted {gate,door} and the password that opened them, while the card is open
-let ADMIN=null; // {pw,gate,door} while admin is editing
-// Share whichever copy the admin is on: the Vercel site, or the claude.ai card.
-const LINK=/(^|\.)vercel\.app$/.test(location.hostname)?location.origin+"/":"https://claude.ai/artifact/RrioP7Meg3HnNCAAQJNxiK";
-const PIN_HASH="6e8d491cb167afd87d0d6810465afc655c59d8461868c48956ad155ea2bb9132";
-const SKELETON='<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>';
+let ADMIN=null,ADMIN_PIN=null; // {pw,gate,door} and the verified PIN while admin is editing
+const SITE="https://ekanth-alpha.vercel.app";
+const LINK=SITE+"/";
+const API=/(^|\.)vercel\.app$|^localhost$|^127\.0\.0\.1$/.test(location.hostname)?"/api/vault":SITE+"/api/vault";
+let vaultReady=loadVault();
+async function loadVault(){
+  try{const r=await fetch(API,{cache:"no-store"});if(r.ok){const d=await r.json();if(d&&d.vault)VAULT=d.vault;}}catch(_){}
+}
+async function api(body){
+  let r;
+  try{r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});}
+  catch(_){return {error:"offline"};}
+  try{return await r.json();}catch(_){return {error:"server"};}
+}
+function apiError(d){
+  return {pin:"Wrong PIN."+(d.triesLeft?` ${d.triesLeft} tries left.`:""),
+    locked:`Too many wrong PINs. Admin is locked for ${Math.ceil((d.retryAfter||900)/60)} minutes.`,
+    password:"The card password was changed somewhere else. Close admin and start again with the new password.",
+    not_setup:"Saving isn't set up on the server yet.",
+    offline:"Can't reach the server. Open "+SITE+" and try again."}[d.error]||"Something went wrong. Nothing was changed. Try again.";
+}
 
 const enc=new TextEncoder();
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
@@ -252,17 +266,6 @@ async function sealVault(codes,pw){
   const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(JSON.stringify(codes)));
   return {s:tob64(salt),i:tob64(iv),c:tob64(ct)};
 }
-async function sha256(t){return [...new Uint8Array(await crypto.subtle.digest("SHA-256",enc.encode(t)))].map(b=>b.toString(16).padStart(2,"0")).join("");}
-function buildDoc(vault){
-  return SKELETON+'\n<title>Ekanth 189 Key Card</title>\n'
-    +'<link rel="preconnect" href="https://fonts.googleapis.com">\n'
-    +'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@700&display=swap">\n'
-    +'<style id="css">'+SRC.css+'</style>\n\n'
-    +'<template id="ui">'+SRC.ui+'</template>\n\n'
-    +'<script type="application/json" id="vault">'+JSON.stringify(vault)+'<\/script>\n\n'
-    +'<script id="app">'+SRC.app+'<\/script>\n\n</body></html>';
-}
-
 function fill(el,code){el.innerHTML="";el.style.gridTemplateColumns=`repeat(${Math.max(code.length,1)},1fr)`;
   [...code].forEach(ch=>{const d=document.createElement("div");d.className="d";d.textContent=ch;el.appendChild(d)});}
 function show(id){for(const s of ["locked","open","admin"])$(s).hidden=s!==id;$("adminbtn").hidden=id==="admin";}
@@ -275,6 +278,7 @@ $("unlock").addEventListener("submit",async e=>{
   if(!pw){$("err").textContent="Type the password first.";return;}
   $("go").disabled=true;$("go").textContent="…";$("err").textContent="";
   try{
+    await vaultReady;
     const v=await openVault(pw);CURRENT=v;CURPW=pw;
     fill($("gate"),v.gate);fill($("door"),v.door);
     show("open");$("pw").value="";
@@ -286,9 +290,8 @@ $("unlock").addEventListener("submit",async e=>{
 $("relock").addEventListener("click",()=>{$("gate").innerHTML="";$("door").innerHTML="";CURRENT=null;CURPW=null;show("locked");});
 
 // ---- Admin ----
-// PIN opens the admin space; the current card password (asked once) unlocks the codes so any one item can change.
+// The server checks the PIN; the current card password (asked once) unlocks the codes so any one item can change.
 const ITEMS={pw:"Card password",gate:"Gate code",door:"Door code"};
-let pinTries=0,pinWaitUntil=0;
 function openAdmin(stage){
   show("admin");
   $("pinform").hidden=stage!=="pin";$("authform").hidden=stage!=="auth";$("editor").hidden=stage!=="edit";
@@ -312,7 +315,7 @@ function openItem(f){
 function closeItem(f){f.querySelector(".iedit").hidden=true;f.querySelector("[data-edit]").hidden=false;f.querySelector("[data-in]").value="";}
 function closeAdmin(){
   if(ADMIN&&CURRENT){CURRENT={gate:ADMIN.gate,door:ADMIN.door};CURPW=ADMIN.pw;fill($("gate"),CURRENT.gate);fill($("door"),CURRENT.door);}
-  ADMIN=null;$("pin").value="";$("curpw").value="";
+  ADMIN=null;ADMIN_PIN=null;$("pin").value="";$("curpw").value="";
   for(const id of ["pinerr","autherr","editmsg","shareerr"])say(id,"");
   show(CURRENT?"open":"locked");
 }
@@ -321,17 +324,16 @@ $("adminclose").addEventListener("click",closeAdmin);
 
 $("pinform").addEventListener("submit",async e=>{
   e.preventDefault();
-  if(Date.now()<pinWaitUntil){say("pinerr","Too many tries. Wait a few seconds.");return;}
-  if(await sha256("ekanth189:"+$("pin").value)===PIN_HASH){
-    pinTries=0;
-    if(CURRENT&&CURPW){ADMIN={pw:CURPW,gate:CURRENT.gate,door:CURRENT.door};openAdmin("edit");}
-    else openAdmin("auth");
-    return;
-  }
-  pinTries++;$("pin").value="";
-  if(pinTries>=5){pinTries=0;pinWaitUntil=Date.now()+30000;say("pinerr","Wrong PIN. Locked for 30 seconds.");}
-  else say("pinerr","Wrong PIN.");
-  shake($("pinrow"));
+  const pin=$("pin").value.trim(),btn=$("pinform").querySelector("button");
+  if(!pin){say("pinerr","Type the PIN first.");return;}
+  btn.disabled=true;say("pinerr","Checking…",true);
+  const d=await api({pin});
+  btn.disabled=false;
+  if(!d.ok){$("pin").value="";say("pinerr",apiError(d));shake($("pinrow"));return;}
+  ADMIN_PIN=pin;
+  await vaultReady;
+  if(CURRENT&&CURPW){ADMIN={pw:CURPW,gate:CURRENT.gate,door:CURRENT.door};openAdmin("edit");}
+  else openAdmin("auth");
 });
 
 $("authform").addEventListener("submit",async e=>{
@@ -339,7 +341,7 @@ $("authform").addEventListener("submit",async e=>{
   const pw=$("curpw").value;
   if(!pw){say("autherr","Type the current card password first.");return;}
   $("authbtn").disabled=true;say("autherr","Checking…",true);
-  try{const v=await openVault(pw);ADMIN={pw,gate:v.gate,door:v.door};$("curpw").value="";openAdmin("edit");}
+  try{await vaultReady;const v=await openVault(pw);ADMIN={pw,gate:v.gate,door:v.door};$("curpw").value="";openAdmin("edit");}
   catch(_){say("autherr","That isn't the current card password.");shake($("authrow"));}
   finally{$("authbtn").disabled=false;}
 });
@@ -358,40 +360,19 @@ for(const f of document.querySelectorAll("form.item")){
   });
 }
 
-// Re-encrypt the codes with the (possibly new) password and save the page.
+// Re-encrypt the codes with the (possibly new) password and store them on the server.
 async function saveAdmin(next,k){
-  const label=ITEMS[k];
-  say("editmsg","Encrypting…",true);
+  say("editmsg","Saving…",true);
   try{
     const vault=await sealVault({gate:next.gate,door:next.door},next.pw);
     const back=await openVault(next.pw,vault);
     if(back.gate!==next.gate||back.door!==next.door)throw new Error("check");
-    const onClaude=!!(window.claude&&window.claude.use);
-    const artifact=onClaude?await window.claude.use("artifact"):null;
-    if(onClaude&&!artifact){say("editmsg","Only the card owner can make changes. Open the card from Ram's claude.ai account.");return;}
-    if(!artifact){
-      // Static hosting (Vercel): hand the admin the updated page to upload to GitHub; Vercel redeploys it.
-      const a=document.createElement("a");
-      a.href=URL.createObjectURL(new Blob([buildDoc(vault)],{type:"text/html"}));a.download="index.html";
-      document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),60000);
-      VAULT=vault;ADMIN=next;renderEditor();
-      say("editmsg",label+" changed in a new index.html (downloaded). Upload it to the ekanth GitHub repo, replacing index.html; the site updates in about a minute.",true);
-      return;
-    }
-    try{sessionStorage.setItem("ekanth-changed",JSON.stringify({pw:next.pw,k,t:Date.now()}));}catch(_){}
-    say("editmsg","Saving…",true);
-    await artifact.publish(buildDoc(vault));
+    const d=await api({pin:ADMIN_PIN,password:ADMIN.pw,newPassword:next.pw,vault});
+    if(!d.ok){say("editmsg",apiError(d));return;}
     VAULT=vault;ADMIN=next;renderEditor();
-    say("editmsg",doneText(k),true);
-  }catch(err){
-    try{sessionStorage.removeItem("ekanth-changed");}catch(_){}
-    const code=err&&err.code;
-    if(code==="not_granted"||code==="not_writer")say("editmsg","Only the card owner can make changes. Open the card from Ram's claude.ai account.");
-    else if(code==="conflict")say("editmsg","The card was updated somewhere else at the same moment. Close admin and try again.");
-    else say("editmsg","Couldn't save. Nothing was changed. Try again.");
-  }
+    say("editmsg",ITEMS[k]+" changed for everyone."+(k==="pw"?" Share the new password below.":""),true);
+  }catch(_){say("editmsg","Couldn't save. Nothing was changed. Try again.");}
 }
-function doneText(k){return ITEMS[k]+" changed for everyone."+(k==="pw"?" Share the new password below.":"");}
 
 function shareText(){return "Ekanth 189 farmhouse key card\nOpen: "+LINK+"\nPassword: "+(ADMIN?ADMIN.pw:"");}
 function updateShare(){
@@ -406,17 +387,6 @@ $("copybtn").addEventListener("click",async()=>{
 });
 if(navigator.share){$("sharebtn").hidden=false;
   $("sharebtn").addEventListener("click",()=>navigator.share({title:"Ekanth 189 Key Card",text:shareText()}).catch(()=>{}));}
-
-// After a change the page reloads to the new version; reopen the admin settings for the admin who just saved.
-(async()=>{
-  try{
-    const j=JSON.parse(sessionStorage.getItem("ekanth-changed")||"null");
-    sessionStorage.removeItem("ekanth-changed");
-    if(!j||Date.now()-j.t>10*60*1000)return;
-    const v=await openVault(j.pw);ADMIN={pw:j.pw,gate:v.gate,door:v.door};
-    openAdmin("edit");say("editmsg",doneText(j.k),true);
-  }catch(_){}
-})();
 
 // ---- Jungle at night (canvas) ----
 const cv=$("jungle"),ctx=cv.getContext("2d");
