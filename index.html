@@ -244,7 +244,7 @@ function apiError(d){
   return {pin:"Wrong PIN."+(d.triesLeft?` ${d.triesLeft} tries left.`:""),
     locked:`Too many wrong PINs. Admin is locked for ${Math.ceil((d.retryAfter||900)/60)} minutes.`,
     password:"The card password was changed somewhere else. Close admin and start again with the new password.",
-    not_setup:"Saving isn't set up on the server yet.",
+    not_setup:"Admin isn't switched on yet: the Vercel storage and ADMIN_PIN setting are missing, so no PIN can be checked.",
     offline:"Can't reach the server. Open "+SITE+" and try again."}[d.error]||"Something went wrong. Nothing was changed. Try again.";
 }
 
