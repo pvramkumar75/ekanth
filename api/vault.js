@@ -70,7 +70,7 @@ export async function GET() {
 //       { pin, password }                         -> also checks the current card password
 //       { pin, password, newPassword, vault }     -> saves the new vault
 export async function POST(request) {
-  if (!hasStore() || !process.env.ADMIN_PIN) return json({ error: 'not_setup' }, 503);
+  if (!hasStore() || !process.env.ADMIN_PIN) return json({ error: 'not_setup', setup: { storage: hasStore(), adminPin: !!process.env.ADMIN_PIN } }, 503);
   let body;
   try { body = await request.json(); } catch { return json({ error: 'bad_request' }, 400); }
 
