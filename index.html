@@ -75,9 +75,12 @@ button:focus-visible{outline:2px solid var(--ivory);outline-offset:2px}
 .adminlink:hover{opacity:1}
 .panel{display:flex;flex-direction:column;gap:18px}
 .ptitle{font-family:var(--display);font-weight:700;font-size:28px;text-align:center;color:var(--gold);margin:0}
-.stack{display:flex;flex-direction:column;gap:8px}
-.stack input{flex:none}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.itop{display:flex;align-items:center;gap:12px}
+.itop>div{flex:1;min-width:0}
+.ival{margin-top:6px;font:700 22px var(--mono);color:#fff6df;letter-spacing:.08em;overflow-wrap:anywhere}
+.sm{padding:8px 14px;align-self:center}
+.iedit{display:flex;flex-direction:column;gap:10px}
+.iedit input{flex:none}
 .solid{padding:14px 18px}
 .btnrow{display:flex;gap:8px;flex-wrap:wrap}
 .btnrow>*{flex:1 1 120px}
@@ -156,37 +159,43 @@ button:focus-visible{outline:2px solid var(--ivory);outline-offset:2px}
       <div class="err" id="pinerr" role="status"></div>
      </form>
 
-     <div id="adminpanel" class="panel" hidden>
-      <form id="loadform" class="box" autocomplete="off">
-       <h2>1 · Load current codes</h2>
-       <div class="stack">
-        <label for="curpw">Current password</label>
-        <div class="field">
-         <input id="curpw" type="password" placeholder="Current password" autocapitalize="off" spellcheck="false">
-         <button type="submit" id="loadbtn">Load</button>
-        </div>
-       </div>
-       <p class="hint" style="text-align:left">Or type the gate and door codes yourself below.</p>
-       <div class="err" id="loaderr" role="status"></div>
-      </form>
+     <form id="authform" class="box" autocomplete="off" hidden>
+      <h2>Current card password</h2>
+      <p class="hint" style="text-align:left">Type it once to open the admin settings.</p>
+      <div class="field" id="authrow">
+       <input id="curpw" type="password" placeholder="Current password" aria-label="Current card password" autocapitalize="off" spellcheck="false">
+       <button type="submit" id="authbtn">Continue</button>
+      </div>
+      <div class="err" id="autherr" role="status"></div>
+     </form>
 
-      <form id="saveform" class="box" autocomplete="off">
-       <h2>2 · Set new password</h2>
-       <div class="two">
-        <div class="stack"><label for="ngate">Gate code</label><input id="ngate" inputmode="numeric" maxlength="8" placeholder="Gate"></div>
-        <div class="stack"><label for="ndoor">Door code</label><input id="ndoor" inputmode="numeric" maxlength="8" placeholder="Door"></div>
+     <div id="editor" class="panel" hidden>
+      <form class="box item" data-k="pw" autocomplete="off">
+       <div class="itop"><div><h2>Card password</h2><div class="ival" data-val></div></div><button type="button" class="ghost sm" data-edit>Change</button></div>
+       <div class="iedit" hidden>
+        <input data-in type="text" placeholder="New card password" aria-label="New card password" autocapitalize="off" spellcheck="false">
+        <div class="btnrow"><button type="submit" class="solid">Save</button><button type="button" class="ghost" data-cancel>Cancel</button></div>
        </div>
-       <div class="stack">
-        <label for="npw">New password</label>
-        <input id="npw" type="text" placeholder="New password" autocapitalize="off" spellcheck="false">
-       </div>
-       <button type="submit" class="solid" id="savebtn">Save new password</button>
-       <div class="err" id="saveerr" role="status"></div>
       </form>
+      <form class="box item" data-k="gate" autocomplete="off">
+       <div class="itop"><div><h2>Gate code</h2><div class="ival" data-val></div></div><button type="button" class="ghost sm" data-edit>Change</button></div>
+       <div class="iedit" hidden>
+        <input data-in inputmode="numeric" maxlength="8" placeholder="New gate code" aria-label="New gate code">
+        <div class="btnrow"><button type="submit" class="solid">Save</button><button type="button" class="ghost" data-cancel>Cancel</button></div>
+       </div>
+      </form>
+      <form class="box item" data-k="door" autocomplete="off">
+       <div class="itop"><div><h2>Door code</h2><div class="ival" data-val></div></div><button type="button" class="ghost sm" data-edit>Change</button></div>
+       <div class="iedit" hidden>
+        <input data-in inputmode="numeric" maxlength="8" placeholder="New door code" aria-label="New door code">
+        <div class="btnrow"><button type="submit" class="solid">Save</button><button type="button" class="ghost" data-cancel>Cancel</button></div>
+       </div>
+      </form>
+      <div class="err" id="editmsg" role="status"></div>
 
       <div class="box">
-       <h2>3 · Share with guests</h2>
-       <textarea id="msg" rows="4" readonly aria-label="Message to share"></textarea>
+       <h2>Share with guests</h2>
+       <textarea id="msg" rows="5" readonly aria-label="Message to share"></textarea>
        <div class="btnrow">
         <a class="dir" id="wa" href="#" target="_blank" rel="noopener">WhatsApp</a>
         <button type="button" class="solid" id="copybtn">Copy message</button>
@@ -218,7 +227,8 @@ const SRC={css:$("css").textContent,ui:$("ui").innerHTML,app:document.currentScr
 document.body.appendChild($("ui").content.cloneNode(true));
 
 let VAULT=JSON.parse($("vault").textContent);
-let CURRENT=null; // decrypted {gate,door} while the card is open
+let CURRENT=null,CURPW=null; // decrypted {gate,door} and the password that opened them, while the card is open
+let ADMIN=null; // {pw,gate,door} while admin is editing
 // Share whichever copy the admin is on: the Vercel site, or the claude.ai card.
 const LINK=/(^|\.)vercel\.app$/.test(location.hostname)?location.origin+"/":"https://claude.ai/artifact/RrioP7Meg3HnNCAAQJNxiK";
 const PIN_HASH="6e8d491cb167afd87d0d6810465afc655c59d8461868c48956ad155ea2bb9132";
@@ -265,7 +275,7 @@ $("unlock").addEventListener("submit",async e=>{
   if(!pw){$("err").textContent="Type the password first.";return;}
   $("go").disabled=true;$("go").textContent="…";$("err").textContent="";
   try{
-    const v=await openVault(pw);CURRENT=v;
+    const v=await openVault(pw);CURRENT=v;CURPW=pw;
     fill($("gate"),v.gate);fill($("door"),v.door);
     show("open");$("pw").value="";
   }catch(_){
@@ -273,93 +283,121 @@ $("unlock").addEventListener("submit",async e=>{
     shake($("fieldrow"));
   }finally{$("go").disabled=false;$("go").textContent="Unlock";}
 });
-$("relock").addEventListener("click",()=>{$("gate").innerHTML="";$("door").innerHTML="";CURRENT=null;show("locked");});
+$("relock").addEventListener("click",()=>{$("gate").innerHTML="";$("door").innerHTML="";CURRENT=null;CURPW=null;show("locked");});
 
 // ---- Admin ----
+// PIN opens the admin space; the current card password (asked once) unlocks the codes so any one item can change.
+const ITEMS={pw:"Card password",gate:"Gate code",door:"Door code"};
 let pinTries=0,pinWaitUntil=0;
-function openAdmin(unlocked){
+function openAdmin(stage){
   show("admin");
-  $("pinform").hidden=unlocked;$("adminpanel").hidden=!unlocked;
-  if(unlocked){
-    if(CURRENT){$("ngate").value=CURRENT.gate;$("ndoor").value=CURRENT.door;}
-    updateShare();
-  }else{$("pin").value="";say("pinerr","");setTimeout(()=>$("pin").focus(),0);}
+  $("pinform").hidden=stage!=="pin";$("authform").hidden=stage!=="auth";$("editor").hidden=stage!=="edit";
+  if(stage==="pin"){$("pin").value="";say("pinerr","");setTimeout(()=>$("pin").focus(),0);}
+  if(stage==="auth"){$("curpw").value="";say("autherr","");setTimeout(()=>$("curpw").focus(),0);}
+  if(stage==="edit")renderEditor();
 }
+function renderEditor(){
+  for(const f of document.querySelectorAll("form.item")){
+    f.querySelector("[data-val]").textContent=ADMIN[f.dataset.k];
+    closeItem(f);
+  }
+  updateShare();
+}
+function openItem(f){
+  for(const o of document.querySelectorAll("form.item"))if(o!==f)closeItem(o);
+  const inp=f.querySelector("[data-in]");inp.value=f.dataset.k==="pw"?"":ADMIN[f.dataset.k];
+  f.querySelector(".iedit").hidden=false;f.querySelector("[data-edit]").hidden=true;
+  inp.focus();inp.select();
+}
+function closeItem(f){f.querySelector(".iedit").hidden=true;f.querySelector("[data-edit]").hidden=false;f.querySelector("[data-in]").value="";}
 function closeAdmin(){
-  for(const id of ["curpw","ngate","ndoor","npw","pin"])$(id).value="";
-  for(const id of ["loaderr","saveerr","shareerr","pinerr"])say(id,"");
-  updateShare();show(CURRENT?"open":"locked");
+  if(ADMIN&&CURRENT){CURRENT={gate:ADMIN.gate,door:ADMIN.door};CURPW=ADMIN.pw;fill($("gate"),CURRENT.gate);fill($("door"),CURRENT.door);}
+  ADMIN=null;$("pin").value="";$("curpw").value="";
+  for(const id of ["pinerr","autherr","editmsg","shareerr"])say(id,"");
+  show(CURRENT?"open":"locked");
 }
-$("adminbtn").addEventListener("click",()=>openAdmin(false));
+$("adminbtn").addEventListener("click",()=>openAdmin("pin"));
 $("adminclose").addEventListener("click",closeAdmin);
 
 $("pinform").addEventListener("submit",async e=>{
   e.preventDefault();
   if(Date.now()<pinWaitUntil){say("pinerr","Too many tries. Wait a few seconds.");return;}
-  if(await sha256("ekanth189:"+$("pin").value)===PIN_HASH){pinTries=0;openAdmin(true);return;}
+  if(await sha256("ekanth189:"+$("pin").value)===PIN_HASH){
+    pinTries=0;
+    if(CURRENT&&CURPW){ADMIN={pw:CURPW,gate:CURRENT.gate,door:CURRENT.door};openAdmin("edit");}
+    else openAdmin("auth");
+    return;
+  }
   pinTries++;$("pin").value="";
   if(pinTries>=5){pinTries=0;pinWaitUntil=Date.now()+30000;say("pinerr","Wrong PIN. Locked for 30 seconds.");}
   else say("pinerr","Wrong PIN.");
   shake($("pinrow"));
 });
 
-$("loadform").addEventListener("submit",async e=>{
+$("authform").addEventListener("submit",async e=>{
   e.preventDefault();
   const pw=$("curpw").value;
-  if(!pw){say("loaderr","Type the current password first.");return;}
-  $("loadbtn").disabled=true;say("loaderr","Checking…",true);
-  try{
-    const v=await openVault(pw);
-    $("ngate").value=v.gate;$("ndoor").value=v.door;$("curpw").value="";
-    say("loaderr","Codes loaded.",true);
-  }catch(_){say("loaderr","That isn't the current password.");}
-  finally{$("loadbtn").disabled=false;}
+  if(!pw){say("autherr","Type the current card password first.");return;}
+  $("authbtn").disabled=true;say("autherr","Checking…",true);
+  try{const v=await openVault(pw);ADMIN={pw,gate:v.gate,door:v.door};$("curpw").value="";openAdmin("edit");}
+  catch(_){say("autherr","That isn't the current card password.");shake($("authrow"));}
+  finally{$("authbtn").disabled=false;}
 });
 
-$("saveform").addEventListener("submit",async e=>{
-  e.preventDefault();
-  const gate=$("ngate").value.trim(),door=$("ndoor").value.trim(),pw=$("npw").value;
-  if(!/^\d{3,8}$/.test(gate)||!/^\d{3,8}$/.test(door)){say("saveerr","Gate and door codes must be 3 to 8 digits. Load them with the current password, or type them in.");return;}
-  if(pw.trim().length<4){say("saveerr","Use a new password of at least 4 characters.");return;}
-  $("savebtn").disabled=true;say("saveerr","Encrypting…",true);
+for(const f of document.querySelectorAll("form.item")){
+  f.querySelector("[data-edit]").addEventListener("click",()=>{say("editmsg","");openItem(f);});
+  f.querySelector("[data-cancel]").addEventListener("click",()=>closeItem(f));
+  f.addEventListener("submit",async e=>{
+    e.preventDefault();
+    const k=f.dataset.k,raw=f.querySelector("[data-in]").value,val=k==="pw"?raw:raw.trim();
+    if(k==="pw"&&val.trim().length<4){say("editmsg","Use a card password of at least 4 characters.");return;}
+    if(k!=="pw"&&!/^\d{3,8}$/.test(val)){say("editmsg",ITEMS[k]+" must be 3 to 8 digits.");return;}
+    if(val===ADMIN[k]){say("editmsg","That's the same as now. Nothing to change.");return;}
+    const btn=f.querySelector("button[type=submit]");btn.disabled=true;
+    try{await saveAdmin({...ADMIN,[k]:val},k);}finally{btn.disabled=false;}
+  });
+}
+
+// Re-encrypt the codes with the (possibly new) password and save the page.
+async function saveAdmin(next,k){
+  const label=ITEMS[k];
+  say("editmsg","Encrypting…",true);
   try{
-    const vault=await sealVault({gate,door},pw);
-    const back=await openVault(pw,vault);
-    if(back.gate!==gate||back.door!==door)throw new Error("check");
+    const vault=await sealVault({gate:next.gate,door:next.door},next.pw);
+    const back=await openVault(next.pw,vault);
+    if(back.gate!==next.gate||back.door!==next.door)throw new Error("check");
     const onClaude=!!(window.claude&&window.claude.use);
     const artifact=onClaude?await window.claude.use("artifact"):null;
-    if(onClaude&&!artifact){say("saveerr","Only the card owner can change the password. Open the card from Ram's claude.ai account.");return;}
+    if(onClaude&&!artifact){say("editmsg","Only the card owner can make changes. Open the card from Ram's claude.ai account.");return;}
     if(!artifact){
       // Static hosting (Vercel): hand the admin the updated page to upload to GitHub; Vercel redeploys it.
       const a=document.createElement("a");
       a.href=URL.createObjectURL(new Blob([buildDoc(vault)],{type:"text/html"}));a.download="index.html";
       document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),60000);
-      say("saveerr","Downloaded a new index.html. Upload it to the ekanth GitHub repo (replace index.html); the site switches to the new password in about a minute.",true);
+      VAULT=vault;ADMIN=next;renderEditor();
+      say("editmsg",label+" changed in a new index.html (downloaded). Upload it to the ekanth GitHub repo, replacing index.html; the site updates in about a minute.",true);
       return;
     }
-    try{sessionStorage.setItem("ekanth-changed",JSON.stringify({pw,t:Date.now()}));}catch(_){}
-    say("saveerr","Saving…",true);
+    try{sessionStorage.setItem("ekanth-changed",JSON.stringify({pw:next.pw,k,t:Date.now()}));}catch(_){}
+    say("editmsg","Saving…",true);
     await artifact.publish(buildDoc(vault));
-    VAULT=vault;CURRENT={gate,door};
-    say("saveerr","Saved. The new password works for everyone now. Share it below.",true);
+    VAULT=vault;ADMIN=next;renderEditor();
+    say("editmsg",doneText(k),true);
   }catch(err){
     try{sessionStorage.removeItem("ekanth-changed");}catch(_){}
     const code=err&&err.code;
-    if(code==="not_granted"||code==="not_writer")say("saveerr","Only the card owner can change the password. Open the card from Ram's claude.ai account.");
-    else if(code==="conflict")say("saveerr","The card was updated somewhere else at the same moment. Close admin and try again.");
-    else say("saveerr","Couldn't save the new password. Nothing was changed. Try again.");
-  }finally{$("savebtn").disabled=false;}
-});
-
-function shareText(){
-  const pw=$("npw").value;
-  return "Ekanth 189 farmhouse key card\nOpen: "+LINK+(pw?"\nPassword: "+pw:"\nPassword: (type the new password above)");
+    if(code==="not_granted"||code==="not_writer")say("editmsg","Only the card owner can make changes. Open the card from Ram's claude.ai account.");
+    else if(code==="conflict")say("editmsg","The card was updated somewhere else at the same moment. Close admin and try again.");
+    else say("editmsg","Couldn't save. Nothing was changed. Try again.");
+  }
 }
+function doneText(k){return ITEMS[k]+" changed for everyone."+(k==="pw"?" Share the new password below.":"");}
+
+function shareText(){return "Ekanth 189 farmhouse key card\nOpen: "+LINK+"\nPassword: "+(ADMIN?ADMIN.pw:"");}
 function updateShare(){
   const t=shareText();$("msg").value=t;
   $("wa").href="https://wa.me/?text="+encodeURIComponent(t);
 }
-$("npw").addEventListener("input",updateShare);
 $("copybtn").addEventListener("click",async()=>{
   const t=shareText();
   try{await navigator.clipboard.writeText(t);say("shareerr","Message copied.",true);}
@@ -369,13 +407,16 @@ $("copybtn").addEventListener("click",async()=>{
 if(navigator.share){$("sharebtn").hidden=false;
   $("sharebtn").addEventListener("click",()=>navigator.share({title:"Ekanth 189 Key Card",text:shareText()}).catch(()=>{}));}
 
-// After a password change the page reloads to the new version; reopen the share step for the admin who just saved.
-try{
-  const j=JSON.parse(sessionStorage.getItem("ekanth-changed")||"null");
-  sessionStorage.removeItem("ekanth-changed");
-  if(j&&Date.now()-j.t<10*60*1000){openAdmin(true);$("npw").value=j.pw;updateShare();
-    say("saveerr","Saved. The new password works for everyone now. Share it below.",true);}
-}catch(_){}
+// After a change the page reloads to the new version; reopen the admin settings for the admin who just saved.
+(async()=>{
+  try{
+    const j=JSON.parse(sessionStorage.getItem("ekanth-changed")||"null");
+    sessionStorage.removeItem("ekanth-changed");
+    if(!j||Date.now()-j.t>10*60*1000)return;
+    const v=await openVault(j.pw);ADMIN={pw:j.pw,gate:v.gate,door:v.door};
+    openAdmin("edit");say("editmsg",doneText(j.k),true);
+  }catch(_){}
+})();
 
 // ---- Jungle at night (canvas) ----
 const cv=$("jungle"),ctx=cv.getContext("2d");
