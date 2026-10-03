@@ -1,9 +1,8 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><meta property="og:title" content="Ekanth 189 Key Card"><meta property="og:description" content="Farmhouse access card. Password needed to view the codes."></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Ekanth 189 Key Card</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@700&display=swap">
-<style>
+<style id="css">
 /* Layout: one phone-sized card. Canvas jungle at night fills the top; the lock (and later the codes) sit below. Single dark look by design. */
 :root{
   --night:#07120d;
@@ -13,6 +12,7 @@
   --ivory:#f4ead2;
   --muted:#a7b6aa;
   --danger:#e58f7a;
+  --good:#a9d6a0;
   --display:"Cormorant Garamond", Georgia, "Times New Roman", serif;
   --body:"DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
@@ -33,21 +33,24 @@ h1{font-family:var(--display);font-weight:700;font-size:58px;line-height:1;margi
   text-shadow:0 2px 24px rgba(0,0,0,.35)}
 .no{display:inline-block;font-size:12px;letter-spacing:.3em;padding:5px 14px;border-radius:999px;border:1px solid rgba(216,180,106,.45);
   color:var(--ivory);background:rgba(7,18,13,.55);font-weight:700}
-.body{padding:22px 24px 26px;display:flex;flex-direction:column;gap:20px}
+.body{padding:22px 24px 18px;display:flex;flex-direction:column;gap:20px}
 blockquote{margin:0;text-align:center;font-family:var(--display);font-style:italic;font-weight:500;font-size:22px;line-height:1.35;color:var(--ivory);text-wrap:balance}
 blockquote cite{display:block;margin-top:8px;font-family:var(--body);font-style:normal;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
 .rule{height:1px;background:linear-gradient(90deg,transparent,rgba(216,180,106,.5),transparent)}
 form{display:flex;flex-direction:column;gap:10px}
 label{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:8px}
 .field{display:flex;gap:8px}
-input{flex:1;min-width:0;font:500 16px var(--body);color:var(--ivory);background:#0e1f17;border:1px solid #2b4436;border-radius:14px;padding:14px 14px;outline:none}
-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(216,180,106,.18)}
+input,textarea{flex:1;min-width:0;font:500 16px var(--body);color:var(--ivory);background:#0e1f17;border:1px solid #2b4436;border-radius:14px;padding:14px 14px;outline:none;box-sizing:border-box}
+textarea{font-size:14px;line-height:1.5;resize:none;width:100%}
+input:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(216,180,106,.18)}
 button{font:700 14px var(--body);letter-spacing:.06em;border:0;border-radius:14px;padding:0 18px;cursor:pointer;
   background:linear-gradient(180deg,#e8c87f,#b98f45);color:#1b1408}
+button:disabled{opacity:.6;cursor:default}
 button:focus-visible{outline:2px solid var(--ivory);outline-offset:2px}
 .ghost{background:transparent;color:var(--muted);border:1px solid #2b4436;padding:10px 16px;align-self:center}
-.err{min-height:18px;font-size:13px;color:var(--danger)}
-.hint{font-size:12px;color:var(--muted);text-align:center;line-height:1.5}
+.err{min-height:18px;font-size:13px;color:var(--danger);line-height:1.45}
+.err.ok{color:var(--good)}
+.hint{font-size:12px;color:var(--muted);text-align:center;line-height:1.5;margin:0}
 .codes{display:flex;flex-direction:column;gap:14px}
 .code{border-radius:20px;padding:14px 16px 16px;background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid rgba(216,180,106,.28)}
 .code .top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
@@ -57,15 +60,33 @@ button:focus-visible{outline:2px solid var(--ivory);outline-offset:2px}
 .digits{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .d{height:62px;border-radius:14px;display:grid;place-items:center;font:700 32px var(--mono);color:#fff6df;font-variant-numeric:tabular-nums;
   background:linear-gradient(180deg,#17271e,#0e1913);border:1px solid #2e4437;box-shadow:inset 0 -3px 0 rgba(0,0,0,.4)}
+.dir{display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font:700 14px var(--body);letter-spacing:.06em;
+  border-radius:14px;padding:14px 18px;background:linear-gradient(180deg,#e8c87f,#b98f45);color:#1b1408}
+.dir:focus-visible{outline:2px solid var(--ivory);outline-offset:2px}
 .welcome{font-family:var(--display);font-style:italic;font-size:20px;text-align:center;color:var(--gold)}
 .reveal .d{animation:pop .5s cubic-bezier(.2,.9,.3,1.2) both}
 .reveal .d:nth-child(2){animation-delay:.06s}.reveal .d:nth-child(3){animation-delay:.12s}.reveal .d:nth-child(4){animation-delay:.18s}
 @keyframes pop{from{transform:translateY(8px) scale(.9);opacity:.2}to{transform:none;opacity:1}}
 .shake{animation:shake .4s}
 @keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+/* Admin */
+.adminlink{align-self:center;display:flex;align-items:center;gap:6px;background:none;color:var(--muted);opacity:.75;
+  font:700 11px var(--body);letter-spacing:.24em;text-transform:uppercase;padding:8px 12px}
+.adminlink:hover{opacity:1}
+.panel{display:flex;flex-direction:column;gap:18px}
+.ptitle{font-family:var(--display);font-weight:700;font-size:28px;text-align:center;color:var(--gold);margin:0}
+.stack{display:flex;flex-direction:column;gap:8px}
+.stack input{flex:none}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.solid{padding:14px 18px}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap}
+.btnrow>*{flex:1 1 120px}
+.box{border-radius:20px;padding:16px;border:1px solid rgba(216,180,106,.28);background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.02));display:flex;flex-direction:column;gap:12px}
+.box h2{margin:0;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--ivory)}
 @media (prefers-reduced-motion:reduce){.reveal .d,.shake{animation:none}}
 </style>
 
+<template id="ui">
 <div class="page">
  <main class="card">
   <div class="scene">
@@ -116,42 +137,243 @@ button:focus-visible{outline:2px solid var(--ivory);outline-offset:2px}
        <div class="digits" id="door"></div>
       </div>
      </div>
+     <a class="dir" href="https://www.google.com/maps/place/17%C2%B031'19.3%22N+78%C2%B036'11.0%22E/@17.5220333,78.6004737,17z/data=!3m1!4b1!4m4!3m3!8m2!3d17.5220333!4d78.6030486?hl=en&amp;entry=ttu&amp;g_ep=EgoyMDI2MDkzMC4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Direction</a>
      <p class="hint">Please close the gate behind you and keep these codes private.</p>
      <button class="ghost" id="relock" type="button">Lock card</button>
     </div>
    </section>
+
+   <section id="admin" hidden>
+    <div class="panel">
+     <h2 class="ptitle">Admin</h2>
+
+     <form id="pinform" autocomplete="off">
+      <label for="pin">Admin PIN</label>
+      <div class="field" id="pinrow">
+       <input id="pin" type="password" inputmode="numeric" maxlength="8" placeholder="PIN" aria-describedby="pinerr">
+       <button type="submit">Enter</button>
+      </div>
+      <div class="err" id="pinerr" role="status"></div>
+     </form>
+
+     <div id="adminpanel" class="panel" hidden>
+      <form id="loadform" class="box" autocomplete="off">
+       <h2>1 · Load current codes</h2>
+       <div class="stack">
+        <label for="curpw">Current password</label>
+        <div class="field">
+         <input id="curpw" type="password" placeholder="Current password" autocapitalize="off" spellcheck="false">
+         <button type="submit" id="loadbtn">Load</button>
+        </div>
+       </div>
+       <p class="hint" style="text-align:left">Or type the gate and door codes yourself below.</p>
+       <div class="err" id="loaderr" role="status"></div>
+      </form>
+
+      <form id="saveform" class="box" autocomplete="off">
+       <h2>2 · Set new password</h2>
+       <div class="two">
+        <div class="stack"><label for="ngate">Gate code</label><input id="ngate" inputmode="numeric" maxlength="8" placeholder="Gate"></div>
+        <div class="stack"><label for="ndoor">Door code</label><input id="ndoor" inputmode="numeric" maxlength="8" placeholder="Door"></div>
+       </div>
+       <div class="stack">
+        <label for="npw">New password</label>
+        <input id="npw" type="text" placeholder="New password" autocapitalize="off" spellcheck="false">
+       </div>
+       <button type="submit" class="solid" id="savebtn">Save new password</button>
+       <div class="err" id="saveerr" role="status"></div>
+      </form>
+
+      <div class="box">
+       <h2>3 · Share with guests</h2>
+       <textarea id="msg" rows="4" readonly aria-label="Message to share"></textarea>
+       <div class="btnrow">
+        <a class="dir" id="wa" href="#" target="_blank" rel="noopener">WhatsApp</a>
+        <button type="button" class="solid" id="copybtn">Copy message</button>
+        <button type="button" class="solid" id="sharebtn" hidden>Share…</button>
+       </div>
+       <div class="err" id="shareerr" role="status"></div>
+      </div>
+     </div>
+
+     <button class="ghost" id="adminclose" type="button">Close admin</button>
+    </div>
+   </section>
+
+   <button class="adminlink" id="adminbtn" type="button"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Admin</button>
   </div>
  </main>
 </div>
+</template>
 
-<script>
+<script type="application/json" id="vault">{"s":"XvurYdycBW8A7wb+1ooleA==","i":"3j13LCnq6e4FJ2xr","c":"wHY+nKF2ZcugyOcOb85Vmn94ly0YPRsLcjQBacV/OseVJIDUjE3q2NTbgOWj5nJb"}</script>
+
+<script id="app">
 // Codes are AES-GCM encrypted with a key derived from the password (PBKDF2-SHA256, 250k rounds).
 // Neither the codes nor the password appear in this page's source.
-const VAULT={s:"XvurYdycBW8A7wb+1ooleA==",i:"3j13LCnq6e4FJ2xr",c:"wHY+nKF2ZcugyOcOb85Vmn94ly0YPRsLcjQBacV/OseVJIDUjE3q2NTbgOWj5nJb"};
+// Changing the password re-encrypts the codes and republishes this page with the new vault.
+const $=id=>document.getElementById(id);
+// Source pieces, captured before anything renders, so a republish rebuilds the page from its source, not the live screen.
+const SRC={css:$("css").textContent,ui:$("ui").innerHTML,app:document.currentScript.textContent};
+document.body.appendChild($("ui").content.cloneNode(true));
+
+let VAULT=JSON.parse($("vault").textContent);
+let CURRENT=null; // decrypted {gate,door} while the card is open
+// Share whichever copy the admin is on: the Vercel site, or the claude.ai card.
+const LINK=/(^|\.)vercel\.app$/.test(location.hostname)?location.origin+"/":"https://claude.ai/artifact/RrioP7Meg3HnNCAAQJNxiK";
+const PIN_HASH="6e8d491cb167afd87d0d6810465afc655c59d8461868c48956ad155ea2bb9132";
+const SKELETON='<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>';
+
+const enc=new TextEncoder();
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
-async function openVault(pw){
-  const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveKey"]);
-  const key=await crypto.subtle.deriveKey({name:"PBKDF2",salt:b64(VAULT.s),iterations:250000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,["decrypt"]);
-  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64(VAULT.i)},key,b64(VAULT.c));
+const tob64=u=>btoa(String.fromCharCode(...new Uint8Array(u)));
+async function keyFor(pw,salt,use){
+  const base=await crypto.subtle.importKey("raw",enc.encode(pw),"PBKDF2",false,["deriveKey"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:250000,hash:"SHA-256"},base,{name:"AES-GCM",length:256},false,[use]);
+}
+async function openVault(pw,v=VAULT){
+  const key=await keyFor(pw,b64(v.s),"decrypt");
+  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64(v.i)},key,b64(v.c));
   return JSON.parse(new TextDecoder().decode(pt));
 }
-const $=id=>document.getElementById(id);
-function fill(el,code){el.innerHTML="";[...code].forEach(ch=>{const d=document.createElement("div");d.className="d";d.textContent=ch;el.appendChild(d)});}
+async function sealVault(codes,pw){
+  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+  const key=await keyFor(pw,salt,"encrypt");
+  const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(JSON.stringify(codes)));
+  return {s:tob64(salt),i:tob64(iv),c:tob64(ct)};
+}
+async function sha256(t){return [...new Uint8Array(await crypto.subtle.digest("SHA-256",enc.encode(t)))].map(b=>b.toString(16).padStart(2,"0")).join("");}
+function buildDoc(vault){
+  return SKELETON+'\n<title>Ekanth 189 Key Card</title>\n'
+    +'<link rel="preconnect" href="https://fonts.googleapis.com">\n'
+    +'<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@700&display=swap">\n'
+    +'<style id="css">'+SRC.css+'</style>\n\n'
+    +'<template id="ui">'+SRC.ui+'</template>\n\n'
+    +'<script type="application/json" id="vault">'+JSON.stringify(vault)+'<\/script>\n\n'
+    +'<script id="app">'+SRC.app+'<\/script>\n\n</body></html>';
+}
+
+function fill(el,code){el.innerHTML="";el.style.gridTemplateColumns=`repeat(${Math.max(code.length,1)},1fr)`;
+  [...code].forEach(ch=>{const d=document.createElement("div");d.className="d";d.textContent=ch;el.appendChild(d)});}
+function show(id){for(const s of ["locked","open","admin"])$(s).hidden=s!==id;$("adminbtn").hidden=id==="admin";}
+function shake(el){el.classList.remove("shake");void el.offsetWidth;el.classList.add("shake");}
+function say(id,text,ok){$(id).textContent=text;$(id).classList.toggle("ok",!!ok);}
+
 $("unlock").addEventListener("submit",async e=>{
   e.preventDefault();
   const pw=$("pw").value;
   if(!pw){$("err").textContent="Type the password first.";return;}
   $("go").disabled=true;$("go").textContent="…";$("err").textContent="";
   try{
-    const v=await openVault(pw);
+    const v=await openVault(pw);CURRENT=v;
     fill($("gate"),v.gate);fill($("door"),v.door);
-    $("locked").hidden=true;$("open").hidden=false;$("pw").value="";
+    show("open");$("pw").value="";
   }catch(_){
     $("err").textContent="That password didn't work. Check capitals and symbols, then try again.";
-    const r=$("fieldrow");r.classList.remove("shake");void r.offsetWidth;r.classList.add("shake");
+    shake($("fieldrow"));
   }finally{$("go").disabled=false;$("go").textContent="Unlock";}
 });
-$("relock").addEventListener("click",()=>{$("gate").innerHTML="";$("door").innerHTML="";$("open").hidden=true;$("locked").hidden=false;});
+$("relock").addEventListener("click",()=>{$("gate").innerHTML="";$("door").innerHTML="";CURRENT=null;show("locked");});
+
+// ---- Admin ----
+let pinTries=0,pinWaitUntil=0;
+function openAdmin(unlocked){
+  show("admin");
+  $("pinform").hidden=unlocked;$("adminpanel").hidden=!unlocked;
+  if(unlocked){
+    if(CURRENT){$("ngate").value=CURRENT.gate;$("ndoor").value=CURRENT.door;}
+    updateShare();
+  }else{$("pin").value="";say("pinerr","");setTimeout(()=>$("pin").focus(),0);}
+}
+function closeAdmin(){
+  for(const id of ["curpw","ngate","ndoor","npw","pin"])$(id).value="";
+  for(const id of ["loaderr","saveerr","shareerr","pinerr"])say(id,"");
+  updateShare();show(CURRENT?"open":"locked");
+}
+$("adminbtn").addEventListener("click",()=>openAdmin(false));
+$("adminclose").addEventListener("click",closeAdmin);
+
+$("pinform").addEventListener("submit",async e=>{
+  e.preventDefault();
+  if(Date.now()<pinWaitUntil){say("pinerr","Too many tries. Wait a few seconds.");return;}
+  if(await sha256("ekanth189:"+$("pin").value)===PIN_HASH){pinTries=0;openAdmin(true);return;}
+  pinTries++;$("pin").value="";
+  if(pinTries>=5){pinTries=0;pinWaitUntil=Date.now()+30000;say("pinerr","Wrong PIN. Locked for 30 seconds.");}
+  else say("pinerr","Wrong PIN.");
+  shake($("pinrow"));
+});
+
+$("loadform").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const pw=$("curpw").value;
+  if(!pw){say("loaderr","Type the current password first.");return;}
+  $("loadbtn").disabled=true;say("loaderr","Checking…",true);
+  try{
+    const v=await openVault(pw);
+    $("ngate").value=v.gate;$("ndoor").value=v.door;$("curpw").value="";
+    say("loaderr","Codes loaded.",true);
+  }catch(_){say("loaderr","That isn't the current password.");}
+  finally{$("loadbtn").disabled=false;}
+});
+
+$("saveform").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const gate=$("ngate").value.trim(),door=$("ndoor").value.trim(),pw=$("npw").value;
+  if(!/^\d{3,8}$/.test(gate)||!/^\d{3,8}$/.test(door)){say("saveerr","Gate and door codes must be 3 to 8 digits. Load them with the current password, or type them in.");return;}
+  if(pw.trim().length<4){say("saveerr","Use a new password of at least 4 characters.");return;}
+  $("savebtn").disabled=true;say("saveerr","Encrypting…",true);
+  try{
+    const vault=await sealVault({gate,door},pw);
+    const back=await openVault(pw,vault);
+    if(back.gate!==gate||back.door!==door)throw new Error("check");
+    const artifact=window.claude&&window.claude.use?await window.claude.use("artifact"):null;
+    if(!artifact){
+      // Static hosting (Vercel): hand the admin the updated page to upload to GitHub; Vercel redeploys it.
+      const a=document.createElement("a");
+      a.href=URL.createObjectURL(new Blob([buildDoc(vault)],{type:"text/html"}));a.download="index.html";
+      document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),60000);
+      say("saveerr","Downloaded a new index.html. Upload it to the ekanth GitHub repo (replace index.html); the site switches to the new password in about a minute.",true);
+      return;
+    }
+    try{sessionStorage.setItem("ekanth-changed",JSON.stringify({pw,t:Date.now()}));}catch(_){}
+    say("saveerr","Saving…",true);
+    await artifact.publish(buildDoc(vault));
+    VAULT=vault;CURRENT={gate,door};
+    say("saveerr","Saved. The new password works for everyone now. Share it below.",true);
+  }catch(err){
+    try{sessionStorage.removeItem("ekanth-changed");}catch(_){}
+    const code=err&&err.code;
+    if(code==="not_granted"||code==="not_writer")say("saveerr","Only the card owner can change the password. Open the card from Ram's claude.ai account.");
+    else if(code==="conflict")say("saveerr","The card was updated somewhere else at the same moment. Close admin and try again.");
+    else say("saveerr","Couldn't save the new password. Nothing was changed. Try again.");
+  }finally{$("savebtn").disabled=false;}
+});
+
+function shareText(){
+  const pw=$("npw").value;
+  return "Ekanth 189 farmhouse key card\nOpen: "+LINK+(pw?"\nPassword: "+pw:"\nPassword: (type the new password above)");
+}
+function updateShare(){
+  const t=shareText();$("msg").value=t;
+  $("wa").href="https://wa.me/?text="+encodeURIComponent(t);
+}
+$("npw").addEventListener("input",updateShare);
+$("copybtn").addEventListener("click",async()=>{
+  const t=shareText();
+  try{await navigator.clipboard.writeText(t);say("shareerr","Message copied.",true);}
+  catch(_){$("msg").focus();$("msg").select();
+    try{document.execCommand("copy");say("shareerr","Message copied.",true);}catch(__){say("shareerr","Select the message above and copy it.");}}
+});
+if(navigator.share){$("sharebtn").hidden=false;
+  $("sharebtn").addEventListener("click",()=>navigator.share({title:"Ekanth 189 Key Card",text:shareText()}).catch(()=>{}));}
+
+// After a password change the page reloads to the new version; reopen the share step for the admin who just saved.
+try{
+  const j=JSON.parse(sessionStorage.getItem("ekanth-changed")||"null");
+  sessionStorage.removeItem("ekanth-changed");
+  if(j&&Date.now()-j.t<10*60*1000){openAdmin(true);$("npw").value=j.pw;updateShare();
+    say("saveerr","Saved. The new password works for everyone now. Share it below.",true);}
+}catch(_){}
 
 // ---- Jungle at night (canvas) ----
 const cv=$("jungle"),ctx=cv.getContext("2d");
